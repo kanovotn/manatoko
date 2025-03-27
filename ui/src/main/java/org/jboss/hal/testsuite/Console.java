@@ -20,7 +20,6 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.arquillian.drone.api.annotation.Drone;
-import org.jboss.arquillian.graphene.Graphene;
 import org.jboss.hal.resources.Ids;
 import org.jboss.hal.testsuite.container.HalContainer;
 import org.jboss.hal.testsuite.container.WildFlyContainer;
@@ -104,35 +103,29 @@ public class Console {
     /**
      * Waits until all notifications are gone.
      */
-    /**public void waitNoNotification() {
+    /**
+     * public void waitNoNotification() { List<WebElement> dismissibleNotifications = By.cssSelector(DOT +
+     * alertDismissable).findElements(browser); for (int remainingExpected = dismissibleNotifications.size();
+     * !dismissibleNotifications.isEmpty() && remainingExpected > 0; remainingExpected--) {
+     *
+     * WebElement button = dismissibleNotifications.get(0).findElement(By.cssSelector("button.close")); if (button != null) {
+     * button.click(); } dismissibleNotifications = By.cssSelector(DOT + alertDismissable).findElements(browser); }
+     * waitModel().until().element(By.cssSelector(DOT + toastNotificationsListPf + ":empty")).is().present(); }
+     */
+
+    public void waitNoNotification() {
         List<WebElement> dismissibleNotifications = By.cssSelector(DOT + alertDismissable).findElements(browser);
         for (int remainingExpected = dismissibleNotifications.size(); !dismissibleNotifications.isEmpty()
                 && remainingExpected > 0; remainingExpected--) {
 
             WebElement button = dismissibleNotifications.get(0).findElement(By.cssSelector("button.close"));
             if (button != null) {
-                button.click();
+                if (button.isDisplayed())
+                    button.click();
             }
             dismissibleNotifications = By.cssSelector(DOT + alertDismissable).findElements(browser);
         }
         waitModel().until().element(By.cssSelector(DOT + toastNotificationsListPf + ":empty")).is().present();
-    }*/
-
-    public void waitNoNotification() {
-        // Wait until at least one dismissible notification is present
-        Graphene.waitGui().until().element(By.cssSelector(DOT + alertDismissable)).is().present();
-
-        List<WebElement> dismissibleNotifications = browser.findElements(By.cssSelector(DOT + alertDismissable));
-
-        for (WebElement notification : dismissibleNotifications) {
-            WebElement closeButton = notification.findElement(By.cssSelector("button.close"));
-            if (closeButton != null && closeButton.isDisplayed()) {
-                Graphene.guardAjax(closeButton).click();
-            }
-        }
-
-        // Wait until the notifications list is empty
-        Graphene.waitGui().until().element(By.cssSelector("." + toastNotificationsListPf + ":empty")).is().present();
     }
 
     /**
