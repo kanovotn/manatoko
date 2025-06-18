@@ -61,9 +61,16 @@ public class Browser extends BrowserWebDriverContainer<Browser> {
     private Browser(String dockerImage) {
         super(DockerImageName.parse(dockerImage)
                 .asCompatibleSubstituteFor("selenium/standalone-chrome"));
+
+        ChromeOptions opts = new ChromeOptions()
+                .addArguments(
+                        "--disable-dev-shm-usage",
+                        "--no-sandbox",
+                        "--headless=new"      // keep whatever else you need
+                );
         this.withNetwork(Network.INSTANCE)
                 .withNetworkAliases("selenium")
-                .withCapabilities(new ChromeOptions())
+                .withCapabilities(opts)
                 .withRecordingMode(VncRecordingMode.RECORD_FAILING, Paths.get("target/recordings").toFile(), MP4)
                 .waitingFor(Wait.forLogMessage(".*Started Selenium Standalone.*", 1))
                 .withStartupTimeout(Timeouts.BROWSER_STARTUP_TIMEOUT);
